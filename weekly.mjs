@@ -44,7 +44,7 @@ await mkdir("reports", { recursive: true });
 await writeFile("reports/latest.json", JSON.stringify(report, null, 2) + "\n");
 const lines = ["# Radar semanal · Cazador de Ofertas", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
   `Ofertas verificadas: **${offers.length} de un máximo de 20**. Búsquedas revisadas: ${coverage.length}/${searches.length}.`,
-  "", "Búsqueda por huellas de plataformas de venta; el nicho y el formato ebook/app se clasifican al abrir la página. El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Meta puede no indexar un dominio en la búsqueda. Un cero no prueba que no existan otras ofertas.",
+  "", "Búsqueda por huellas de plataformas de venta; el nicho y el formato digital se clasifican al abrir la página. El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Meta puede no indexar un dominio en la búsqueda. Un cero no prueba que no existan otras ofertas.",
   "Se cuentan IDs individuales activos del mismo anunciante y destino exacto: más de 20 para marcar actividad publicitaria sostenida. No implica ventas ni rentabilidad.",
   "Visitas a la página: no disponibles públicamente para esta URL; no se sustituyen por tráfico estimado del dominio. Se evalúan estructura, promesa, precio, CTA y pruebas visibles.", "", "## Ofertas", ""];
 if (!offers.length) lines.push("Ninguna cumplió el umbral y la verificación de página en la cobertura revisada.", "");
@@ -54,6 +54,7 @@ for (const [index, o] of offers.entries()) {
   lines.push(`### ${index + 1}. ${o.advertiser} — ${o.market} · ${o.niche} · ${o.productType}`,
     `- **${o.count} IDs observados** con el mismo destino. Visitas de esta página: no verificables públicamente.`,
     `- Página: [${o.landing.headline || o.landingUrl}](${o.landingUrl}); precio visible: ${o.landing.price}; acción: ${o.landing.purchaseAction}.`,
+    o.landing.checkoutUrl ? `- [Checkout observado](${o.landing.checkoutUrl}); no se asume un order bump si no se observó.` : "- Checkout: no observable en el enlace de compra.",
     `- [Anunciante en Meta](${library}) · [Anuncio de muestra](https://www.facebook.com/ads/library/?id=${o.adIds[0]})`, "");
 }
 lines.push("## Cobertura", "", "| Mercado | Huella buscada | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---:|---:|---:|---|");
