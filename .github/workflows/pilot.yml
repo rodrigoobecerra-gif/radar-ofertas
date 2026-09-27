@@ -2,6 +2,13 @@ name: Radar semanal Meta Ads Library
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - searches.json
+      - collector.mjs
+      - weekly.mjs
+      - .github/workflows/pilot.yml
   workflow_dispatch:
   schedule:
     - cron: '0 11 * * 1'
@@ -22,7 +29,7 @@ jobs:
         env:
           RADAR_SEARCH_LIMIT: ${{ github.event_name == 'pull_request' && '2' || '8' }}
       - name: Guardar informe privado
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
