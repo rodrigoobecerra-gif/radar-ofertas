@@ -175,12 +175,24 @@ async function main() {
     const pageCounts = new Map();
     for (const ad of observations.values()) pageCounts.set(ad.pageId, (pageCounts.get(ad.pageId) || 0) + 1);
     const candidatePages = [...pageCounts].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([pageId]) => pageId);
+    const libraryPageIds = new Map();
     report.reachedBottom &&= candidatePages.length > 0;
     for (const pageId of candidatePages) {
-      const library = advertiserLibraryUrl(pageId);
+      // The numeric Facebook profile URL is often not the Ads Library page ID.
+      // Resolve the advertiser through Meta's own page-search suggestion.
+      const advertiser = [...observations.values()].find(ad => ad.pageId === pageId)?.advertiser;
+      let library = "", libraryPageId = null;
       let reachedBottom = false, error = null, unchanged = 0;
       try {
-        await page.goto(library, { waitUntil: "domcontentloaded", timeout: 45000 });
+        if (!advertiser) throw new Error("Advertiser name missing");
+        await page.goto(report.searchUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
+        const search = page.getByRole("searchbox", { name: /Buscar por palabra clave o anunciante|Search by keyword or advertiser/i });
+        await search.fill(advertiser);
+        await page.getByRole("heading", { name: advertiser, exact: true }).first().click({ timeout: 15000 });
+        libraryPageId = new URL(page.url()).searchParams.get("view_all_page_id");
+        if (!libraryPageId) throw new Error("No advertiser library ID from Meta suggestion");
+        library = advertiserLibraryUrl(libraryPageId);
+        libraryPageIds.set(pageId, libraryPageId);
         await page.getByText(/Identificador de la biblioteca|Library ID|ID da Biblioteca/i).first().waitFor({ timeout: 12000 });
         for (let i = 0; i < 45; i++) {
           const batch = await page.locator("body").evaluate(extractVisibleAds, { market: MARKET, niche: NICHE });
@@ -209,7 +221,7 @@ async function main() {
         error = `${String(cause).slice(0, 130)}; url=${page.url()}; page-tail=${diagnostic.replace(/\s+/g, " ")}`.slice(0, 1700);
       }
       report.reviewedAdvertisers++;
-      report.advertiserScans.push({ pageId, library, reachedBottom, error });
+      report.advertiserScans.push({ pageId, advertiser, libraryPageId, library, reachedBottom, error });
       report.reachedBottom &&= reachedBottom && !error;
     }
     // Search and creative-summary ads only nominate an advertiser. The actual
@@ -221,7 +233,7 @@ async function main() {
     report.groups = groupExactDestinations(ads);
     for (const group of report.groups.filter(g => g.count >= 21).slice(0, 4)) {
       const landing = await checkSalesPage(browser, group);
-      if (landing.status === "sales_page") report.qualifying.push({ ...group, niche: landing.niche, landing });
+      if (landing.status === "sales_page") report.qualifying.push({ ...group, libraryPageId: libraryPageIds.get(group.pageId), niche: landing.niche, landing });
       else group.rejection = landing;
     }
     // Candidate evidence remains separate: search-result IDs do not satisfy
@@ -231,6 +243,7 @@ async function main() {
       const landing = await checkSalesPage(browser, group);
       if (landing.status === "sales_page" && !report.qualifying.some(o => o.pageId === group.pageId && o.landingUrl === group.landingUrl))
         report.candidates.push({ ...group, market: MARKET, niche: landing.niche, productType: landing.productType,
+          libraryPageId: libraryPageIds.get(group.pageId) || null,
           status: "pending_advertiser_library", evidenceSource: "search_results", landing });
     }
     report.status = report.reachedBottom ? "completed_pilot" : "partial_pilot";
