@@ -142,7 +142,7 @@ async function main() {
     report.scannedIds = seenIds.size;
     report.destinationIds = ads.length;
     report.groups = groupExactDestinations(ads);
-    for (const group of report.groups.filter(g => g.count >= 31).slice(0, 4)) {
+    for (const group of report.groups.filter(g => g.count >= 21).slice(0, 4)) {
       const landing = await checkSalesPage(browser, group);
       if (landing.status === "sales_page") report.qualifying.push({ ...group, landing });
       else group.rejection = landing;
