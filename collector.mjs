@@ -92,7 +92,7 @@ async function main() {
     await page.goto(report.searchUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
     await page.getByText(/Identificador de la biblioteca|Library ID|ID da Biblioteca/i).first().waitFor({ timeout: 30000 });
     const seenIds = new Set();
-    const visible = await page.evaluate(extractVisibleAds, { market: MARKET, niche: NICHE });
+    const visible = await page.locator("body").evaluate(extractVisibleAds, { market: MARKET, niche: NICHE });
     for (const ad of visible) observations.set(`${ad.pageId}:${ad.adId}`, ad);
     for (const id of await page.evaluate(() => [...document.querySelectorAll("span")]
       .map(e => e.textContent?.trim().match(/^(?:Identificador de la biblioteca|Library ID|ID da Biblioteca):\s*(\d+)$/i)?.[1]).filter(Boolean))) seenIds.add(id);
