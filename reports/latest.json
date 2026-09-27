@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-27T13:14:45.602Z",
+  "checkedAt": "2026-09-27T13:48:10.500Z",
   "checkedDate": "2026-09-27",
   "status": "partial_bounded_scan",
   "coverage": [
@@ -49,8 +49,8 @@
       "productType": "any",
       "query": "impultienda",
       "status": "partial_pilot",
-      "scannedIds": 32,
-      "searchDestinationIds": 25,
+      "scannedIds": 35,
+      "searchDestinationIds": 31,
       "destinationIds": 0,
       "reviewedSummaries": 3,
       "reviewedAdvertisers": 3,
@@ -64,20 +64,20 @@
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1259324537268785; page-tail=Se ha producido un error :("
         },
         {
+          "pageId": "100090019431912",
+          "advertiser": "Walter Lui",
+          "libraryPageId": "113770674965326",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=113770674965326",
+          "reachedBottom": false,
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=113770674965326; page-tail=Se ha producido un error :("
+        },
+        {
           "pageId": "61594147342289",
           "advertiser": "Aula de Enfermería",
           "libraryPageId": "1299254193268099",
           "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1299254193268099",
           "reachedBottom": false,
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1299254193268099; page-tail=Se ha producido un error :("
-        },
-        {
-          "pageId": "61593793500648",
-          "advertiser": "Hecho por Mia",
-          "libraryPageId": "1326741867180660",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1326741867180660",
-          "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1326741867180660; page-tail=Se ha producido un error :("
         }
       ],
       "scope": "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes",
@@ -89,8 +89,8 @@
       "productType": "any",
       "query": "systeme.io",
       "status": "partial_pilot",
-      "scannedIds": 27,
-      "searchDestinationIds": 20,
+      "scannedIds": 28,
+      "searchDestinationIds": 21,
       "destinationIds": 0,
       "reviewedSummaries": 3,
       "reviewedAdvertisers": 3,
@@ -345,8 +345,8 @@
         "2485745131946653",
         "1132825509218122",
         "1641708923991333",
-        "1354022470138882",
         "28787093810916805",
+        "1354022470138882",
         "1097102866124277",
         "1751967629305801"
       ],
@@ -375,13 +375,13 @@
       "landingUrl": "https://electrolab.impultienda.ar/",
       "adIds": [
         "2843279366058653",
-        "825108254014271",
         "1329999609024647",
+        "825108254014271",
         "1908621967159550",
         "2051130005510422",
         "904307422538908",
-        "1763005781313810",
         "2228545897691708",
+        "1763005781313810",
         "1391805495863967"
       ],
       "count": 9,
@@ -431,33 +431,6 @@
         "price": "US$ 17",
         "purchaseAction": "Quiero el kit",
         "checkoutUrl": "https://geriactiva.impultienda.ar/checkout",
-        "productType": "ebook"
-      },
-      "search": "impultienda"
-    },
-    {
-      "advertiser": "Hecho por Mia",
-      "pageId": "61593793500648",
-      "landingUrl": "https://cosmeticanatural-casera.impultienda.ar/",
-      "adIds": [
-        "28317319164531064",
-        "1086186704107004"
-      ],
-      "count": 2,
-      "market": "AR",
-      "niche": "salud",
-      "productType": "ebook",
-      "libraryPageId": "1326741867180660",
-      "status": "pending_advertiser_library",
-      "evidenceSource": "search_results",
-      "landing": {
-        "status": "sales_page",
-        "finalUrl": "https://cosmeticanatural-casera.impultienda.ar/",
-        "niche": "salud",
-        "headline": "Aprendé a crear tus propios productos naturales, paso a paso y desde cero, en solo 7 días.",
-        "price": "$16.900",
-        "purchaseAction": "QUIERO EL 6X1\nPAGÁS 1 CUADERNO · TE LLEVÁS LOS 6",
-        "checkoutUrl": "https://cosmeticanatural-casera.impultienda.ar/checkout",
         "productType": "ebook"
       },
       "search": "impultienda"

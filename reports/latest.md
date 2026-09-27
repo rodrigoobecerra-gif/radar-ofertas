@@ -4,7 +4,7 @@ Revisión: 2026-09-27 (Argentina). Estado: partial_bounded_scan.
 Ofertas verificadas: **0 de un máximo de 20**. Búsquedas revisadas: 8/8.
 
 Búsqueda por huellas de plataformas de venta; el nicho y el formato digital se clasifican al abrir la página. El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Meta puede no indexar un dominio en la búsqueda. Un cero no prueba que no existan otras ofertas.
-Se cuentan IDs individuales activos del mismo anunciante y destino exacto: más de 20 para marcar actividad publicitaria sostenida. No implica ventas ni rentabilidad.
+Se cuentan IDs individuales activos del mismo anunciante y destino exacto: desde 10 para priorizar el estudio. Menos de 10 vistos se rotulan «iniciando en el radar»; no indica cuándo comenzó la campaña. No implica ventas ni rentabilidad.
 Visitas a la página: no disponibles públicamente para esta URL; no se sustituyen por tráfico estimado del dominio. Se evalúan estructura, promesa, precio, CTA y pruebas visibles.
 
 ## Ofertas
@@ -18,14 +18,13 @@ Estas páginas de venta se abrieron desde anuncios activos con la huella buscada
 - **Geriactiva · BR · salud**: 18 IDs visibles en la búsqueda; [página de venta](https://geriactiva.impultienda.ar/) (US$ 17), [biblioteca del anunciante](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&view_all_page_id=1259324537268785), [anuncio de muestra](https://www.facebook.com/ads/library/?id=1605058248027292). Pendiente de verificar el total de la misma página. 
 - **ElectroLab Soluciones Eléctricas · BR · educacion**: 9 IDs visibles en la búsqueda; [página de venta](https://electrolab.impultienda.ar/) (US$ 27), [biblioteca del anunciante](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&view_all_page_id=1108304792362167), [anuncio de muestra](https://www.facebook.com/ads/library/?id=2843279366058653). Pendiente de verificar el total de la misma página. 
 - **Geriactiva · AR · salud**: 7 IDs visibles en la búsqueda; [página de venta](https://geriactiva.impultienda.ar/) (US$ 17), [biblioteca del anunciante](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&view_all_page_id=1259324537268785), [anuncio de muestra](https://www.facebook.com/ads/library/?id=1605058248027292). Pendiente de verificar el total de la misma página. 
-- **Hecho por Mia · AR · salud**: 2 IDs visibles en la búsqueda; [página de venta](https://cosmeticanatural-casera.impultienda.ar/) ($16.900), [biblioteca del anunciante](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&view_all_page_id=1326741867180660), [anuncio de muestra](https://www.facebook.com/ads/library/?id=28317319164531064). Pendiente de verificar el total de la misma página. 
 ## Cobertura
 
 | Mercado | Huella buscada | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |
 |---|---|---:|---:|---:|---|
 | BR | inlead.digital | 39 | 15 | 0 | partial_pilot |
-| AR | impultienda | 32 | 25 | 0 | partial_pilot |
-| AR | systeme.io | 27 | 20 | 0 | partial_pilot |
+| AR | impultienda | 35 | 31 | 0 | partial_pilot |
+| AR | systeme.io | 28 | 21 | 0 | partial_pilot |
 | BR | systeme.io | 20 | 13 | 0 | partial_pilot |
 | AR | lovable.app | 28 | 21 | 0 | partial_pilot |
 | BR | lovable.app | 36 | 26 | 0 | partial_pilot |
@@ -38,8 +37,8 @@ Bibliotecas revisadas por búsqueda:
 - BR · inlead.digital: [anunciante Acelera Concursos](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=110666561994416) — error parcial.
 - BR · inlead.digital: [anunciante Método Calistenia](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=954820907709991) — error parcial.
 - AR · impultienda: [anunciante Geriactiva](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1259324537268785) — error parcial.
+- AR · impultienda: [anunciante Walter Lui](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=113770674965326) — error parcial.
 - AR · impultienda: [anunciante Aula de Enfermería](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1299254193268099) — error parcial.
-- AR · impultienda: [anunciante Hecho por Mia](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1326741867180660) — error parcial.
 - AR · systeme.io: [anunciante 10x Coach Agency](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1262670746931442) — error parcial.
 - AR · systeme.io: [anunciante Trade Gold Smart](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1101835723018261) — error parcial.
 - AR · systeme.io: [anunciante denize.beauty](https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=106165538721788) — error parcial.
