@@ -22,6 +22,7 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
   catch { report = { status: "failed", error: run.error?.message || run.stderr?.slice(-300) || "sin resultado", scannedIds: 0, destinationIds: 0, reviewedSummaries: 0, qualifying: [] }; }
   coverage.push({ ...search, status: report.status, scannedIds: report.scannedIds,
     destinationIds: report.destinationIds, reviewedSummaries: report.reviewedSummaries,
+    reviewedAdvertisers: report.reviewedAdvertisers, advertiserScans: report.advertiserScans,
     scope: report.scope, error: report.error });
   for (const offer of report.qualifying || []) {
     const key = [search.market, offer.pageId, offer.landingUrl].join("\u001f");
@@ -41,7 +42,7 @@ await mkdir("reports", { recursive: true });
 await writeFile("reports/latest.json", JSON.stringify(report, null, 2) + "\n");
 const lines = ["# Radar semanal de ebooks y apps", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
   `Ofertas verificadas: **${offers.length} de un máximo de 20**. Búsquedas revisadas: ${coverage.length}/${searches.length}.`,
-  "", "El muestreo revisa el primer bloque de resultados y hasta tres resúmenes por búsqueda. Un cero no prueba que no existan otras ofertas en Meta.",
+  "", "El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Un cero no prueba que no existan otras ofertas en Meta.",
   "Se cuentan IDs individuales activos del mismo anunciante y destino exacto: más de 20 para marcar actividad publicitaria sostenida. No implica ventas ni rentabilidad.",
   "Visitas a la página: no disponibles públicamente para esta URL; no se sustituyen por tráfico estimado del dominio. Se evalúan estructura, promesa, precio, CTA y pruebas visibles.", "", "## Ofertas", ""];
 if (!offers.length) lines.push("Ninguna cumplió el umbral y la verificación de página en la cobertura revisada.", "");
@@ -55,6 +56,8 @@ for (const [index, o] of offers.entries()) {
 }
 lines.push("## Cobertura", "", "| Mercado | Nicho | Formato | Búsqueda | IDs vistos | Destinos | Estado |", "|---|---|---|---|---:|---:|---|");
 for (const c of coverage) lines.push(`| ${c.market} | ${c.niche} | ${c.productType} | ${c.query} | ${c.scannedIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
+lines.push("", "Bibliotecas revisadas por búsqueda:", "");
+for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`- ${c.market} · ${c.query}: [anunciante ${a.pageId}](${a.library}) — ${a.error ? "error parcial" : a.reachedBottom ? "recorrido completo" : "recorrido parcial"}.`);
 lines.push("", "Los resultados están fechados; este informe semanal no actualiza automáticamente el Site privado.", "");
 await writeFile("reports/latest.md", lines.join("\n"));
 console.log(JSON.stringify({ status: report.status, count: report.count, completeSearches, executedSearches: coverage.length }));
