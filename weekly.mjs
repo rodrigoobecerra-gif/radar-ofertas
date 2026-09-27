@@ -42,7 +42,7 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
   console.log(`${index + 1}/${Math.min(limit, searches.length)} ${search.market} ${search.niche} ${search.productType}: ${report.status}, ${report.scannedIds} IDs, ${(report.qualifying || []).length} ofertas`);
 }
 
-const offers = [...verified.values()].filter(o => o.count >= 21).sort((a, b) => b.count - a.count).slice(0, 20);
+const offers = [...verified.values()].filter(o => o.count >= 10).sort((a, b) => b.count - a.count).slice(0, 20);
 const candidates = [...pending.entries()].filter(([key]) => !verified.has(key)).map(([,value]) => value)
   .sort((a, b) => b.count - a.count).slice(0, 12);
 const completeSearches = coverage.filter(c => c.status === "completed_pilot").length;
@@ -54,7 +54,7 @@ await writeFile("reports/latest.json", JSON.stringify(report, null, 2) + "\n");
 const lines = ["# Radar semanal · Cazador de Ofertas", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
   `Ofertas verificadas: **${offers.length} de un máximo de 20**. Búsquedas revisadas: ${coverage.length}/${searches.length}.`,
   "", "Búsqueda por huellas de plataformas de venta; el nicho y el formato digital se clasifican al abrir la página. El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Meta puede no indexar un dominio en la búsqueda. Un cero no prueba que no existan otras ofertas.",
-  "Se cuentan IDs individuales activos del mismo anunciante y destino exacto: más de 20 para marcar actividad publicitaria sostenida. No implica ventas ni rentabilidad.",
+  "Se cuentan IDs individuales activos del mismo anunciante y destino exacto: desde 10 para priorizar el estudio. Menos de 10 vistos se rotulan «iniciando en el radar»; no indica cuándo comenzó la campaña. No implica ventas ni rentabilidad.",
   "Visitas a la página: no disponibles públicamente para esta URL; no se sustituyen por tráfico estimado del dominio. Se evalúan estructura, promesa, precio, CTA y pruebas visibles.", "", "## Ofertas", ""];
 if (!offers.length) lines.push("Ninguna cumplió el umbral y la verificación de página en la cobertura revisada.", "");
 for (const [index, o] of offers.entries()) {
