@@ -33,7 +33,7 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
   console.log(`${index + 1}/${Math.min(limit, searches.length)} ${search.market} ${search.niche} ${search.productType}: ${report.status}, ${report.scannedIds} IDs, ${(report.qualifying || []).length} ofertas`);
 }
 
-const offers = [...verified.values()].filter(o => o.count >= 31).sort((a, b) => b.count - a.count).slice(0, 20);
+const offers = [...verified.values()].filter(o => o.count >= 21).sort((a, b) => b.count - a.count).slice(0, 20);
 const completeSearches = coverage.filter(c => c.status === "completed_pilot").length;
 const report = { checkedAt, checkedDate, status: completeSearches === coverage.length ? "completed_bounded_scan" : "partial_bounded_scan",
   coverage, offers, count: offers.length, totalSearches: searches.length, executedSearches: coverage.length };
@@ -42,13 +42,14 @@ await writeFile("reports/latest.json", JSON.stringify(report, null, 2) + "\n");
 const lines = ["# Radar semanal de ebooks y apps", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
   `Ofertas verificadas: **${offers.length} de un máximo de 20**. Búsquedas revisadas: ${coverage.length}/${searches.length}.`,
   "", "El muestreo revisa el primer bloque de resultados y hasta tres resúmenes por búsqueda. Un cero no prueba que no existan otras ofertas en Meta.",
-  "Se cuentan IDs individuales activos del mismo anunciante y destino exacto. La cifra no indica ventas, gasto ni rentabilidad.", "", "## Ofertas", ""];
+  "Se cuentan IDs individuales activos del mismo anunciante y destino exacto: más de 20 para marcar actividad publicitaria sostenida. No implica ventas ni rentabilidad.",
+  "Visitas a la página: no disponibles públicamente para esta URL; no se sustituyen por tráfico estimado del dominio. Se evalúan estructura, promesa, precio, CTA y pruebas visibles.", "", "## Ofertas", ""];
 if (!offers.length) lines.push("Ninguna cumplió el umbral y la verificación de página en la cobertura revisada.", "");
 for (const [index, o] of offers.entries()) {
   const library = new URL("https://www.facebook.com/ads/library/");
   library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: o.market, view_all_page_id: o.pageId }).toString();
   lines.push(`### ${index + 1}. ${o.advertiser} — ${o.market} · ${o.niche} · ${o.productType}`,
-    `- **${o.count} IDs observados** con el mismo destino.`,
+    `- **${o.count} IDs observados** con el mismo destino. Visitas de esta página: no verificables públicamente.`,
     `- Página: [${o.landing.headline || o.landingUrl}](${o.landingUrl}); precio visible: ${o.landing.price}; acción: ${o.landing.purchaseAction}.`,
     `- [Anunciante en Meta](${library}) · [Anuncio de muestra](https://www.facebook.com/ads/library/?id=${o.adIds[0]})`, "");
 }
