@@ -9,6 +9,7 @@ const checkedDate = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argent
   year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 const coverage = [];
 const verified = new Map();
+const pending = new Map();
 
 for (const [index, search] of searches.slice(0, limit).entries()) {
   const output = `out/search-${index + 1}.json`;
@@ -32,14 +33,22 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
     verified.set(key, { ...offer, market: search.market, niche: offer.niche,
       productType: offer.landing.productType, search: search.query, adIds: [...ids], count: ids.size });
   }
+  for (const candidate of report.candidates || []) {
+    const key = [search.market, candidate.pageId, candidate.landingUrl].join("\u001f");
+    const current = pending.get(key);
+    const adIds = [...new Set([...(current?.adIds || []), ...candidate.adIds])];
+    pending.set(key, { ...candidate, search: search.query, adIds, count: adIds.length });
+  }
   console.log(`${index + 1}/${Math.min(limit, searches.length)} ${search.market} ${search.niche} ${search.productType}: ${report.status}, ${report.scannedIds} IDs, ${(report.qualifying || []).length} ofertas`);
 }
 
 const offers = [...verified.values()].filter(o => o.count >= 21).sort((a, b) => b.count - a.count).slice(0, 20);
+const candidates = [...pending.entries()].filter(([key]) => !verified.has(key)).map(([,value]) => value)
+  .sort((a, b) => b.count - a.count).slice(0, 12);
 const completeSearches = coverage.filter(c => c.status === "completed_pilot").length;
 const scannedSearches = coverage.filter(c => c.status === "completed_pilot" || c.status === "partial_pilot").length;
 const report = { checkedAt, checkedDate, status: completeSearches === coverage.length ? "completed_bounded_scan" : "partial_bounded_scan",
-  coverage, offers, count: offers.length, totalSearches: searches.length, executedSearches: coverage.length };
+  coverage, offers, candidates, count: offers.length, totalSearches: searches.length, executedSearches: coverage.length };
 await mkdir("reports", { recursive: true });
 await writeFile("reports/latest.json", JSON.stringify(report, null, 2) + "\n");
 const lines = ["# Radar semanal · Cazador de Ofertas", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
@@ -56,6 +65,13 @@ for (const [index, o] of offers.entries()) {
     `- Página: [${o.landing.headline || o.landingUrl}](${o.landingUrl}); precio visible: ${o.landing.price}; acción: ${o.landing.purchaseAction}.`,
     o.landing.checkoutUrl ? `- [Checkout observado](${o.landing.checkoutUrl}); no se asume un order bump si no se observó.` : "- Checkout: no observable en el enlace de compra.",
     `- [Anunciante en Meta](${library}) · [Anuncio de muestra](https://www.facebook.com/ads/library/?id=${o.adIds[0]})`, "");
+}
+lines.push("## Candidatas en revisión", "", "Estas páginas de venta se abrieron desde anuncios activos con la huella buscada. Los IDs se observaron en resultados de búsqueda, no en la biblioteca completa del anunciante; **no son ofertas verificadas ni prueban ventas**.", "");
+if (!candidates.length) lines.push("Ninguna página de venta candidata comprobada en esta cobertura.", "");
+for (const c of candidates) {
+  const library = new URL("https://www.facebook.com/ads/library/");
+  library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: c.market, view_all_page_id: c.pageId }).toString();
+  lines.push(`- **${c.advertiser} · ${c.market} · ${c.niche}**: ${c.count} IDs visibles en la búsqueda; [página de venta](${c.landingUrl}) (${c.landing.price}), [biblioteca del anunciante](${library}), [anuncio de muestra](https://www.facebook.com/ads/library/?id=${c.adIds[0]}). Pendiente de verificar el total de la misma página. `);
 }
 lines.push("## Cobertura", "", "| Mercado | Huella buscada | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---:|---:|---:|---|");
 for (const c of coverage) lines.push(`| ${c.market} | ${c.query} | ${c.scannedIds || 0} | ${c.searchDestinationIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
