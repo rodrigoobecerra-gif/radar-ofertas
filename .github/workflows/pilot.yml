@@ -20,7 +20,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node weekly.mjs
         env:
-          RADAR_SEARCH_LIMIT: ${{ github.event_name == 'pull_request' && '2' || '12' }}
+          RADAR_SEARCH_LIMIT: ${{ github.event_name == 'pull_request' && '2' || '8' }}
       - name: Guardar informe privado
         if: github.event_name == 'schedule'
         run: |
