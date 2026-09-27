@@ -1,7 +1,7 @@
 # Radar de ofertas — piloto privado
 
-Prueba una búsqueda activa de Meta Ads Library en Brasil. Abre un resumen de anuncios, registra solamente IDs individuales activos con destino web visible y agrupa por anunciante y URL exacta. Si un grupo tiene al menos 31 IDs, abre la página y exige título, precio y acción de compra observables.
+Prueba una búsqueda activa de ebooks en Meta Ads Library Brasil. Las búsquedas planificadas en `searches.json` se centran en ebooks y apps de salud, dinero y amor para Argentina y Brasil. Abre un resumen de anuncios, registra solamente IDs individuales activos con destino web visible y agrupa por anunciante y URL exacta. Si un grupo tiene al menos 31 IDs, abre la página y exige título, precio y acción de compra observables.
 
-El resultado queda en el artefacto privado `radar-pilot/pilot.json` de GitHub Actions. El resumen de Meta no se interpreta como cantidad de anuncios de una oferta. El piloto aún no publica resultados en el Site ni está programado: primero debe pasar una ejecución real en GitHub.
+El flujo semanal recorre 12 búsquedas y deja el informe privado en `reports/latest.md`, además de un artefacto de GitHub Actions. En una solicitud de cambios recorre solo dos búsquedas para validar el funcionamiento. El resumen de Meta se usa para elegir qué revisar, nunca como recuento de una oferta. El informe declara que solo inspecciona el primer bloque de resultados y hasta tres resúmenes por búsqueda.
 
-No se infieren ventas, gasto o rentabilidad. Una página tipo cuestionario o descarga de app no califica. La cobertura del piloto es una búsqueda y un resumen; el `status` y `scannedIds` muestran si pudo inspeccionarlo.
+No se infieren ventas, gasto o rentabilidad. Una página tipo cuestionario o descarga de app no califica. Cada oferta exige al menos 31 IDs individuales activos con el mismo anunciante y URL exacta, y una página con precio, acción de compra y señales del producto ebook/app. Una falla total de extracción no reemplaza el último informe privado. **Este flujo no actualiza el Site privado.**
