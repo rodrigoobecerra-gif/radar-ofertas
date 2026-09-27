@@ -14,6 +14,12 @@ function libraryUrl() {
   return url.toString();
 }
 
+function advertiserLibraryUrl(pageId) {
+  const url = new URL("https://www.facebook.com/ads/library/");
+  url.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: MARKET, view_all_page_id: pageId }).toString();
+  return url.toString();
+}
+
 function extractVisibleAds(dialog, config) {
   const ids = [...dialog.querySelectorAll("span,div")].filter(element => {
     const value = element.textContent?.trim() || "";
@@ -87,7 +93,8 @@ async function main() {
   const observations = new Map();
   const report = { observedAt: new Date().toISOString(), market: MARKET, niche: NICHE, query: QUERY,
     productType: PRODUCT_TYPE, searchUrl: libraryUrl(), status: "incomplete", scannedIds: 0, destinationIds: 0,
-    reachedBottom: false, reviewedSummaries: 0, scope: "primer bloque visible y hasta tres resúmenes", groups: [], qualifying: [], error: null };
+    reachedBottom: false, reviewedSummaries: 0, reviewedAdvertisers: 0,
+    advertiserScans: [], scope: "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes", groups: [], qualifying: [], error: null };
   try {
     const page = await browser.newPage({ locale: "es-ES", viewport: { width: 1365, height: 900 } });
     await page.goto(report.searchUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
@@ -137,6 +144,40 @@ async function main() {
       report.reviewedSummaries++;
       report.reachedBottom &&= reachedBottom;
       await dialog.getByRole("button", { name: /Cerrar|Close|Fechar/i }).last().click();
+    }
+    const pageCounts = new Map();
+    for (const ad of observations.values()) pageCounts.set(ad.pageId, (pageCounts.get(ad.pageId) || 0) + 1);
+    const candidatePages = [...pageCounts].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([pageId]) => pageId);
+    report.reachedBottom &&= candidatePages.length > 0;
+    for (const pageId of candidatePages) {
+      const library = advertiserLibraryUrl(pageId);
+      let reachedBottom = false, error = null, unchanged = 0;
+      try {
+        await page.goto(library, { waitUntil: "domcontentloaded", timeout: 45000 });
+        await page.getByText(/Identificador de la biblioteca|Library ID|ID da Biblioteca/i).first().waitFor({ timeout: 30000 });
+        for (let i = 0; i < 45; i++) {
+          const batch = await page.locator("body").evaluate(extractVisibleAds, { market: MARKET, niche: NICHE });
+          const ids = await page.evaluate(() => [...document.querySelectorAll("span")]
+            .map(e => e.textContent?.trim().match(/^(?:Identificador de la biblioteca|Library ID|ID da Biblioteca):\s*(\d+)$/i)?.[1]).filter(Boolean));
+          for (const id of ids) seenIds.add(id);
+          const previous = observations.size;
+          for (const ad of batch) if (ad.pageId === pageId) observations.set(`${ad.pageId}:${ad.adId}`, ad);
+          const movement = await page.evaluate(() => {
+            const before = window.scrollY;
+            window.scrollBy(0, Math.max(600, window.innerHeight * 0.85));
+            return { bottom: window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 5,
+              moved: window.scrollY > before };
+          });
+          if (movement.bottom && observations.size === previous) unchanged++;
+          else unchanged = 0;
+          if (unchanged >= 2) { reachedBottom = true; break; }
+          if (!movement.moved && !movement.bottom) break;
+          await page.waitForTimeout(400);
+        }
+      } catch (cause) { error = String(cause).slice(0, 240); }
+      report.reviewedAdvertisers++;
+      report.advertiserScans.push({ pageId, library, reachedBottom, error });
+      report.reachedBottom &&= reachedBottom && !error;
     }
     const ads = [...observations.values()];
     report.scannedIds = seenIds.size;
