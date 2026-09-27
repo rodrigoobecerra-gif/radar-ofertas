@@ -29,8 +29,8 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
     const key = [search.market, offer.pageId, offer.landingUrl].join("\u001f");
     const current = verified.get(key);
     const ids = new Set([...(current?.adIds || []), ...offer.adIds]);
-    verified.set(key, { ...offer, market: search.market, niche: search.niche,
-      productType: search.productType, search: search.query, adIds: [...ids], count: ids.size });
+    verified.set(key, { ...offer, market: search.market, niche: offer.niche,
+      productType: offer.landing.productType, search: search.query, adIds: [...ids], count: ids.size });
   }
   console.log(`${index + 1}/${Math.min(limit, searches.length)} ${search.market} ${search.niche} ${search.productType}: ${report.status}, ${report.scannedIds} IDs, ${(report.qualifying || []).length} ofertas`);
 }
@@ -42,9 +42,9 @@ const report = { checkedAt, checkedDate, status: completeSearches === coverage.l
   coverage, offers, count: offers.length, totalSearches: searches.length, executedSearches: coverage.length };
 await mkdir("reports", { recursive: true });
 await writeFile("reports/latest.json", JSON.stringify(report, null, 2) + "\n");
-const lines = ["# Radar semanal de ebooks y apps", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
+const lines = ["# Radar semanal · Cazador de Ofertas", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
   `Ofertas verificadas: **${offers.length} de un máximo de 20**. Búsquedas revisadas: ${coverage.length}/${searches.length}.`,
-  "", "El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Un cero no prueba que no existan otras ofertas en Meta.",
+  "", "Búsqueda por huellas de plataformas de venta; el nicho y el formato ebook/app se clasifican al abrir la página. El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Meta puede no indexar un dominio en la búsqueda. Un cero no prueba que no existan otras ofertas.",
   "Se cuentan IDs individuales activos del mismo anunciante y destino exacto: más de 20 para marcar actividad publicitaria sostenida. No implica ventas ni rentabilidad.",
   "Visitas a la página: no disponibles públicamente para esta URL; no se sustituyen por tráfico estimado del dominio. Se evalúan estructura, promesa, precio, CTA y pruebas visibles.", "", "## Ofertas", ""];
 if (!offers.length) lines.push("Ninguna cumplió el umbral y la verificación de página en la cobertura revisada.", "");
@@ -56,8 +56,8 @@ for (const [index, o] of offers.entries()) {
     `- Página: [${o.landing.headline || o.landingUrl}](${o.landingUrl}); precio visible: ${o.landing.price}; acción: ${o.landing.purchaseAction}.`,
     `- [Anunciante en Meta](${library}) · [Anuncio de muestra](https://www.facebook.com/ads/library/?id=${o.adIds[0]})`, "");
 }
-lines.push("## Cobertura", "", "| Mercado | Nicho | Formato | Búsqueda | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---|---|---:|---:|---:|---|");
-for (const c of coverage) lines.push(`| ${c.market} | ${c.niche} | ${c.productType} | ${c.query} | ${c.scannedIds || 0} | ${c.searchDestinationIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
+lines.push("## Cobertura", "", "| Mercado | Huella buscada | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---:|---:|---:|---|");
+for (const c of coverage) lines.push(`| ${c.market} | ${c.query} | ${c.scannedIds || 0} | ${c.searchDestinationIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
 lines.push("", "Bibliotecas revisadas por búsqueda:", "");
 for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`- ${c.market} · ${c.query}: [anunciante ${a.pageId}](${a.library}) — ${a.error ? "error parcial" : a.reachedBottom ? "recorrido completo" : "recorrido parcial"}.`);
 lines.push("", "Los resultados están fechados; este informe semanal no actualiza automáticamente el Site privado.", "");
