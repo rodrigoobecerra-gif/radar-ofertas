@@ -21,6 +21,7 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
   try { report = JSON.parse(await readFile(output, "utf8")); }
   catch { report = { status: "failed", error: run.error?.message || run.stderr?.slice(-300) || "sin resultado", scannedIds: 0, destinationIds: 0, reviewedSummaries: 0, qualifying: [] }; }
   coverage.push({ ...search, status: report.status, scannedIds: report.scannedIds,
+    searchDestinationIds: report.searchDestinationIds,
     destinationIds: report.destinationIds, reviewedSummaries: report.reviewedSummaries,
     reviewedAdvertisers: report.reviewedAdvertisers, advertiserScans: report.advertiserScans,
     scope: report.scope, error: report.error });
@@ -55,8 +56,8 @@ for (const [index, o] of offers.entries()) {
     `- Página: [${o.landing.headline || o.landingUrl}](${o.landingUrl}); precio visible: ${o.landing.price}; acción: ${o.landing.purchaseAction}.`,
     `- [Anunciante en Meta](${library}) · [Anuncio de muestra](https://www.facebook.com/ads/library/?id=${o.adIds[0]})`, "");
 }
-lines.push("## Cobertura", "", "| Mercado | Nicho | Formato | Búsqueda | IDs vistos | Destinos | Estado |", "|---|---|---|---|---:|---:|---|");
-for (const c of coverage) lines.push(`| ${c.market} | ${c.niche} | ${c.productType} | ${c.query} | ${c.scannedIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
+lines.push("## Cobertura", "", "| Mercado | Nicho | Formato | Búsqueda | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---|---|---:|---:|---:|---|");
+for (const c of coverage) lines.push(`| ${c.market} | ${c.niche} | ${c.productType} | ${c.query} | ${c.scannedIds || 0} | ${c.searchDestinationIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
 lines.push("", "Bibliotecas revisadas por búsqueda:", "");
 for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`- ${c.market} · ${c.query}: [anunciante ${a.pageId}](${a.library}) — ${a.error ? "error parcial" : a.reachedBottom ? "recorrido completo" : "recorrido parcial"}.`);
 lines.push("", "Los resultados están fechados; este informe semanal no actualiza automáticamente el Site privado.", "");
