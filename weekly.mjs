@@ -59,7 +59,7 @@ const lines = ["# Radar semanal · Cazador de Ofertas", "", `Revisión: ${checke
 if (!offers.length) lines.push("Ninguna cumplió el umbral y la verificación de página en la cobertura revisada.", "");
 for (const [index, o] of offers.entries()) {
   const library = new URL("https://www.facebook.com/ads/library/");
-  library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: o.market, view_all_page_id: o.pageId }).toString();
+  library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: o.market, view_all_page_id: o.libraryPageId }).toString();
   lines.push(`### ${index + 1}. ${o.advertiser} — ${o.market} · ${o.niche} · ${o.productType}`,
     `- **${o.count} IDs observados** con el mismo destino. Visitas de esta página: no verificables públicamente.`,
     `- Página: [${o.landing.headline || o.landingUrl}](${o.landingUrl}); precio visible: ${o.landing.price}; acción: ${o.landing.purchaseAction}.`,
@@ -70,13 +70,13 @@ lines.push("## Candidatas en revisión", "", "Estas páginas de venta se abriero
 if (!candidates.length) lines.push("Ninguna página de venta candidata comprobada en esta cobertura.", "");
 for (const c of candidates) {
   const library = new URL("https://www.facebook.com/ads/library/");
-  library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: c.market, view_all_page_id: c.pageId }).toString();
-  lines.push(`- **${c.advertiser} · ${c.market} · ${c.niche}**: ${c.count} IDs visibles en la búsqueda; [página de venta](${c.landingUrl}) (${c.landing.price}), [biblioteca del anunciante](${library}), [anuncio de muestra](https://www.facebook.com/ads/library/?id=${c.adIds[0]}). Pendiente de verificar el total de la misma página. `);
+  if (c.libraryPageId) library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: c.market, view_all_page_id: c.libraryPageId }).toString();
+  lines.push(`- **${c.advertiser} · ${c.market} · ${c.niche}**: ${c.count} IDs visibles en la búsqueda; [página de venta](${c.landingUrl}) (${c.landing.price}), ${c.libraryPageId ? `[biblioteca del anunciante](${library})` : "biblioteca aún sin resolver"}, [anuncio de muestra](https://www.facebook.com/ads/library/?id=${c.adIds[0]}). Pendiente de verificar el total de la misma página. `);
 }
 lines.push("## Cobertura", "", "| Mercado | Huella buscada | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---:|---:|---:|---|");
 for (const c of coverage) lines.push(`| ${c.market} | ${c.query} | ${c.scannedIds || 0} | ${c.searchDestinationIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
 lines.push("", "Bibliotecas revisadas por búsqueda:", "");
-for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`- ${c.market} · ${c.query}: [anunciante ${a.pageId}](${a.library}) — ${a.error ? "error parcial" : a.reachedBottom ? "recorrido completo" : "recorrido parcial"}.`);
+for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`- ${c.market} · ${c.query}: ${a.library ? `[anunciante ${a.advertiser}](${a.library})` : `anunciante ${a.advertiser || a.pageId} (biblioteca sin resolver)`} — ${a.error ? "error parcial" : a.reachedBottom ? "recorrido completo" : "recorrido parcial"}.`);
 lines.push("", "Los resultados están fechados; este informe semanal no actualiza automáticamente el Site privado.", "");
 await writeFile("reports/latest.md", lines.join("\n"));
 console.log(JSON.stringify({ status: report.status, count: report.count, completeSearches, executedSearches: coverage.length }));
