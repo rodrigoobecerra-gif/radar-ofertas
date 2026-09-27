@@ -36,6 +36,7 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
 
 const offers = [...verified.values()].filter(o => o.count >= 21).sort((a, b) => b.count - a.count).slice(0, 20);
 const completeSearches = coverage.filter(c => c.status === "completed_pilot").length;
+const scannedSearches = coverage.filter(c => c.status === "completed_pilot" || c.status === "partial_pilot").length;
 const report = { checkedAt, checkedDate, status: completeSearches === coverage.length ? "completed_bounded_scan" : "partial_bounded_scan",
   coverage, offers, count: offers.length, totalSearches: searches.length, executedSearches: coverage.length };
 await mkdir("reports", { recursive: true });
@@ -61,4 +62,4 @@ for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`-
 lines.push("", "Los resultados están fechados; este informe semanal no actualiza automáticamente el Site privado.", "");
 await writeFile("reports/latest.md", lines.join("\n"));
 console.log(JSON.stringify({ status: report.status, count: report.count, completeSearches, executedSearches: coverage.length }));
-if (completeSearches === 0) process.exitCode = 2;
+if (scannedSearches === 0) process.exitCode = 2;
