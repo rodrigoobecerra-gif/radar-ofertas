@@ -106,7 +106,7 @@ async function main() {
       candidates.push({ index: i, claimedCount: count });
     }
     candidates.sort((a, b) => b.claimedCount - a.claimedCount);
-    report.reachedBottom = candidates.length > 0;
+    report.reachedBottom = true;
     for (const candidate of candidates.slice(0, 3)) {
       await summaries.nth(candidate.index).click();
       const dialog = page.locator('[role="dialog"]').filter({ hasText: /Datos resumidos|Summary data|Dados resumidos/i }).last();
