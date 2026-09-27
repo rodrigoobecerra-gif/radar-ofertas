@@ -7,3 +7,5 @@ El flujo semanal recorre ocho búsquedas y deja el informe privado en `reports/l
 Una oferta exige al menos **21 IDs individuales activos** vistos dentro de la biblioteca del mismo anunciante y dirigidos a la **misma URL exacta**. Después se comprueba que la página se abre y muestra titular, precio positivo, acción de compra y señales de producto digital. Cuestionarios sin página de venta y descargas de aplicaciones sin oferta de compra no califican. Si la biblioteca del anunciante no carga, el grupo no califica aunque aparezca en los resultados de búsqueda.
 
 El recuento demuestra actividad publicitaria observable; no demuestra ventas ni rentabilidad. Meta no publica las visitas a esa URL y una estimación de tráfico del dominio no equivale a visitas de la página. Una falla total de extracción no reemplaza el último informe privado. **Este flujo no actualiza el Site privado por sí solo.**
+
+El informe separa `offers` (umbral confirmado en la biblioteca del anunciante) de `candidates` (página de venta comprobada e IDs vistos solo en resultados de búsqueda). Las candidatas quedan pendientes y jamás se suman al contador de ofertas verificadas.
