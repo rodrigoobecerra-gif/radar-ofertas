@@ -154,7 +154,7 @@ async function main() {
       let reachedBottom = false, error = null, unchanged = 0;
       try {
         await page.goto(library, { waitUntil: "domcontentloaded", timeout: 45000 });
-        await page.getByText(/Identificador de la biblioteca|Library ID|ID da Biblioteca/i).first().waitFor({ timeout: 30000 });
+        await page.getByText(/Identificador de la biblioteca|Library ID|ID da Biblioteca/i).first().waitFor({ timeout: 12000 });
         for (let i = 0; i < 45; i++) {
           const batch = await page.locator("body").evaluate(extractVisibleAds, { market: MARKET, niche: NICHE });
           const ids = await page.evaluate(() => [...document.querySelectorAll("span")]
@@ -174,7 +174,10 @@ async function main() {
           if (!movement.moved && !movement.bottom) break;
           await page.waitForTimeout(400);
         }
-      } catch (cause) { error = String(cause).slice(0, 240); }
+      } catch (cause) {
+        const diagnostic = await page.evaluate(() => document.body?.innerText.slice(0, 450) || "").catch(() => "");
+        error = `${String(cause).slice(0, 130)}; url=${page.url()}; page=${diagnostic.replace(/\s+/g, " ")}`.slice(0, 800);
+      }
       report.reviewedAdvertisers++;
       report.advertiserScans.push({ pageId, library, reachedBottom, error });
       report.reachedBottom &&= reachedBottom && !error;
