@@ -2,10 +2,10 @@ import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
-const QUERY = process.env.RADAR_QUERY || "ebook emagrecimento";
+const QUERY = process.env.RADAR_QUERY || "inlead.digital";
 const MARKET = process.env.RADAR_MARKET || "BR";
-const NICHE = process.env.RADAR_NICHE || "salud";
-const PRODUCT_TYPE = process.env.RADAR_PRODUCT_TYPE || "ebook";
+const NICHE = process.env.RADAR_NICHE || "unknown";
+const PRODUCT_TYPE = process.env.RADAR_PRODUCT_TYPE || "any";
 const OUTPUT = process.env.RADAR_OUTPUT || "out/pilot.json";
 
 function libraryUrl() {
@@ -71,11 +71,15 @@ function nicheFromPage(text) {
   const signals = {
     salud: /\b(?:emagrec\w*|adelgaz\w*|pilates|trein\w*|entren\w*|recet\w*|receit\w*|menopaus\w*|saúde|salud|dieta|nutri\w*|aliment\w*|dormir|sono|yoga)\b/gi,
     dinero: /\b(?:renda|ingresos?|dinheiro|dinero|finan\w*|deudas?|dívidas?|invest\w*|empreend\w*|emprend\w*|negocio|negócio|ahorro|economiz\w*)\b/gi,
-    amor: /\b(?:pareja|casal|relaciona\w*|reconquist\w*|namorad\w*|ruptura|término|termino|apego|amor|separación|separação)\b/gi
+    amor: /\b(?:pareja|casal|relaciona\w*|reconquist\w*|namorad\w*|ruptura|término|termino|apego|amor|separación|separação)\b/gi,
+    hogar: /\b(?:hogar|casa|lar|limpieza|limpeza|organiza\w*|rotina|rutina|tareas|tarefas|família|familia)\b/gi,
+    educacion: /\b(?:aprender|aprendiz\w*|estudi\w*|idioma|inglês|ingles|escola|escuela|alumno|estudante)\b/gi,
+    belleza: /\b(?:belleza|beleza|piel|pele|maquill\w*|maquiag\w*|cosmétic\w*|cabelo|cabello)\b/gi,
+    mascotas: /\b(?:mascota|perro|cachorro|gato|pet|adiestra\w*|adestra\w*|veterin\w*)\b/gi
   };
   const scores = Object.entries(signals).map(([niche, pattern]) => [niche, [...text.matchAll(pattern)].length]);
   scores.sort((a, b) => b[1] - a[1]);
-  return scores[0][1] >= 2 && scores[0][1] > scores[1][1] ? scores[0][0] : "unknown";
+  return scores[0][1] >= 2 && scores[0][1] > scores[1][1] ? scores[0][0] : "otros";
 }
 
 async function checkSalesPage(browser, group) {
@@ -85,18 +89,21 @@ async function checkSalesPage(browser, group) {
     if (!response?.ok()) return { status: "inaccessible", httpStatus: response?.status() ?? null };
     const detail = await page.evaluate(() => {
       const text = document.body?.innerText || "";
-      const actions = [...document.querySelectorAll("a,button")].map(e => e.innerText.trim()).filter(Boolean);
+      const actions = [...document.querySelectorAll("a,button")].map(e => ({ text: e.innerText.trim(), href: e instanceof HTMLAnchorElement ? e.href : "" })).filter(e => e.text);
+      const purchase = actions.find(a => /\b(?:comprar?|adquirir|assinar|inscrev(?:er|a)|garantir|finalizar pedido|ir para (?:o )?checkout)\b/i.test(a.text));
       return { headline: document.querySelector("h1")?.innerText.trim().slice(0, 220) || "",
         nicheText: [document.title, document.querySelector("h1")?.innerText || "", text.slice(0, 8000)].join(" "),
         price: text.match(/(?:R\$|ARS\s*|US\$|\$)\s*[\d.,]+/i)?.[0] || "",
-        purchaseAction: actions.find(a => /\b(?:comprar?|adquirir|assinar|inscrev(?:er|a)|garantir|finalizar pedido|ir para (?:o )?checkout)\b/i.test(a)) || "",
+        purchaseAction: purchase?.text.slice(0, 120) || "",
+        checkoutUrl: purchase?.href.startsWith("https://") ? purchase.href : "",
         productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital)\b/i.test(text) ? "ebook" :
-          /\b(?:app|aplicativo|aplicación|software|plataforma digital)\b/i.test(text) ? "app" : "unknown" };
+          /\b(?:app|aplicativo|aplicación|software|plataforma digital)\b/i.test(text) ? "app" :
+          /\b(?:plantilla|template|planificador|planner|planificateur|guía digital|guia digital)\b/i.test(text) ? "plantilla" : "unknown" };
     });
     const positivePrice = /[1-9]/.test(detail.price.replace(/^(?:R\$|ARS\s*|US\$|\$)\s*/i, ""));
     const niche = nicheFromPage(detail.nicheText);
     const { nicheText, ...publicDetail } = detail;
-    return { status: detail.headline && positivePrice && detail.purchaseAction && niche !== "unknown" &&
+    return { status: detail.headline && positivePrice && detail.purchaseAction &&
       (PRODUCT_TYPE === "any" ? detail.productType !== "unknown" : detail.productType === PRODUCT_TYPE) ? "sales_page" : "unverified",
       finalUrl: page.url(), niche, ...publicDetail };
   } catch (error) { return { status: "inaccessible", error: String(error).slice(0, 240) }; }
