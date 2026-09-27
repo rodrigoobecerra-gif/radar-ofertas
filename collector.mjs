@@ -91,9 +91,10 @@ async function checkSalesPage(browser, group) {
 async function main() {
   const browser = await chromium.launch({ headless: true });
   const observations = new Map();
+  const advertiserObservations = new Map();
   const report = { observedAt: new Date().toISOString(), market: MARKET, niche: NICHE, query: QUERY,
     productType: PRODUCT_TYPE, searchUrl: libraryUrl(), status: "incomplete", scannedIds: 0, destinationIds: 0,
-    reachedBottom: false, reviewedSummaries: 0, reviewedAdvertisers: 0,
+    reachedBottom: false, reviewedSummaries: 0, reviewedAdvertisers: 0, searchDestinationIds: 0,
     advertiserScans: [], scope: "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes", groups: [], qualifying: [], error: null };
   try {
     const page = await browser.newPage({ locale: "es-ES", viewport: { width: 1365, height: 900 } });
@@ -161,7 +162,10 @@ async function main() {
             .map(e => e.textContent?.trim().match(/^(?:Identificador de la biblioteca|Library ID|ID da Biblioteca):\s*(\d+)$/i)?.[1]).filter(Boolean));
           for (const id of ids) seenIds.add(id);
           const previous = observations.size;
-          for (const ad of batch) if (ad.pageId === pageId) observations.set(`${ad.pageId}:${ad.adId}`, ad);
+          for (const ad of batch) if (ad.pageId === pageId) {
+            observations.set(`${ad.pageId}:${ad.adId}`, ad);
+            advertiserObservations.set(`${ad.pageId}:${ad.adId}`, ad);
+          }
           const movement = await page.evaluate(() => {
             const before = window.scrollY;
             window.scrollBy(0, Math.max(600, window.innerHeight * 0.85));
@@ -175,14 +179,17 @@ async function main() {
           await page.waitForTimeout(400);
         }
       } catch (cause) {
-        const diagnostic = await page.evaluate(() => document.body?.innerText.slice(0, 450) || "").catch(() => "");
-        error = `${String(cause).slice(0, 130)}; url=${page.url()}; page=${diagnostic.replace(/\s+/g, " ")}`.slice(0, 800);
+        const diagnostic = await page.evaluate(() => document.body?.innerText.slice(-1300) || "").catch(() => "");
+        error = `${String(cause).slice(0, 130)}; url=${page.url()}; page-tail=${diagnostic.replace(/\s+/g, " ")}`.slice(0, 1700);
       }
       report.reviewedAdvertisers++;
       report.advertiserScans.push({ pageId, library, reachedBottom, error });
       report.reachedBottom &&= reachedBottom && !error;
     }
-    const ads = [...observations.values()];
+    // Search and creative-summary ads only nominate an advertiser. The actual
+    // offer threshold is counted from IDs observed inside its own library.
+    report.searchDestinationIds = observations.size;
+    const ads = [...advertiserObservations.values()];
     report.scannedIds = seenIds.size;
     report.destinationIds = ads.length;
     report.groups = groupExactDestinations(ads);
