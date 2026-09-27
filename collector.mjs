@@ -2,10 +2,10 @@ import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
-const QUERY = process.env.RADAR_QUERY || "ebook emagrecimento";
+const QUERY = process.env.RADAR_QUERY || "inlead.digital";
 const MARKET = process.env.RADAR_MARKET || "BR";
-const NICHE = process.env.RADAR_NICHE || "salud";
-const PRODUCT_TYPE = process.env.RADAR_PRODUCT_TYPE || "ebook";
+const NICHE = process.env.RADAR_NICHE || "unknown";
+const PRODUCT_TYPE = process.env.RADAR_PRODUCT_TYPE || "any";
 const OUTPUT = process.env.RADAR_OUTPUT || "out/pilot.json";
 
 function libraryUrl() {
@@ -67,6 +67,21 @@ function groupExactDestinations(ads) {
     .sort((a, b) => b.count - a.count);
 }
 
+function nicheFromPage(text) {
+  const signals = {
+    salud: /\b(?:emagrec\w*|adelgaz\w*|pilates|trein\w*|entren\w*|recet\w*|receit\w*|menopaus\w*|saúde|salud|dieta|nutri\w*|aliment\w*|dormir|sono|yoga|fisioterap\w*|ejercic\w*|exercíc\w*|movilidad|mobilidade|pacient\w*|rehabilit\w*)\b/gi,
+    dinero: /\b(?:renda|ingresos?|dinheiro|dinero|finan\w*|deudas?|dívidas?|invest\w*|empreend\w*|emprend\w*|negocio|negócio|ahorro|economiz\w*)\b/gi,
+    amor: /\b(?:pareja|casal|relaciona\w*|reconquist\w*|namorad\w*|ruptura|término|termino|apego|amor|separación|separação)\b/gi,
+    hogar: /\b(?:hogar|casa|lar|limpieza|limpeza|organiza\w*|rotina|rutina|tareas|tarefas|família|familia)\b/gi,
+    educacion: /\b(?:aprender|aprendiz\w*|estudi\w*|idioma|inglês|ingles|escola|escuela|alumno|estudante)\b/gi,
+    belleza: /\b(?:belleza|beleza|piel|pele|maquill\w*|maquiag\w*|cosmétic\w*|cabelo|cabello)\b/gi,
+    mascotas: /\b(?:mascota|perro|cachorro|gato|pet|adiestra\w*|adestra\w*|veterin\w*)\b/gi
+  };
+  const scores = Object.entries(signals).map(([niche, pattern]) => [niche, [...text.matchAll(pattern)].length]);
+  scores.sort((a, b) => b[1] - a[1]);
+  return scores[0][1] >= 2 && scores[0][1] > scores[1][1] ? scores[0][0] : "otros";
+}
+
 async function checkSalesPage(browser, group) {
   const page = await browser.newPage({ locale: MARKET === "BR" ? "pt-BR" : "es-AR" });
   try {
@@ -74,16 +89,27 @@ async function checkSalesPage(browser, group) {
     if (!response?.ok()) return { status: "inaccessible", httpStatus: response?.status() ?? null };
     const detail = await page.evaluate(() => {
       const text = document.body?.innerText || "";
-      const actions = [...document.querySelectorAll("a,button")].map(e => e.innerText.trim()).filter(Boolean);
+      const actions = [...document.querySelectorAll("a,button")].map(e => ({ text: e.innerText.trim(), href: e instanceof HTMLAnchorElement ? e.href : "" })).filter(e => e.text);
+      const purchase = actions.find(a => /\b(?:comprar?|adquirir|assinar|inscrev(?:er|a)|garantir|finalizar pedido|ir para (?:o )?checkout|quiero|quero|obtener|acceder|acessar|llevar|baixar|descargar)\b/i.test(a.text));
+      const currency = /(?:AR\$|R\$|ARS\s*|US\$|\$)\s*[\d.,]+/i;
+      const currentPrice = [...document.querySelectorAll('[itemprop="price"],.now,.price-current,.current-price,.sale-price,.preco-atual,.valor-atual')]
+        .map(e => e.textContent?.match(currency)?.[0]).find(Boolean);
+      const labeledPrice = text.match(/(?:hoy\s+(?:por|lo llev[aá]s por)|hoje\s+por|precio\s+(?:final|de oferta)|preço\s+(?:final|de oferta))[^\n]{0,90}?((?:AR\$|R\$|ARS\s*|US\$|\$)\s*[\d.,]+)/i)?.[1];
       return { headline: document.querySelector("h1")?.innerText.trim().slice(0, 220) || "",
-        price: text.match(/(?:R\$|ARS\s*|US\$|\$)\s*[\d.,]+/i)?.[0] || "",
-        purchaseAction: actions.find(a => /\b(?:comprar?|adquirir|assinar|inscrev(?:er|a)|garantir|finalizar pedido|ir para (?:o )?checkout)\b/i.test(a)) || "",
-        productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital)\b/i.test(text) ? "ebook" :
-          /\b(?:app|aplicativo|aplicación|software|plataforma digital)\b/i.test(text) ? "app" : "unknown" };
+        nicheText: [document.title, document.querySelector("h1")?.innerText || "", text.slice(0, 8000)].join(" "),
+        price: currentPrice || labeledPrice || "",
+        purchaseAction: purchase?.text.slice(0, 120) || "",
+        checkoutUrl: purchase?.href.startsWith("https://") ? purchase.href : "",
+        productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital|biblioteca digital|pdf|tomos?|manual(?:es)?|guías?|guias?)\b/i.test(text) ? "ebook" :
+          /\b(?:app|aplicativo|aplicación|software|plataforma digital)\b/i.test(text) ? "app" :
+          /\b(?:plantilla|template|planificador|planner|planificateur|guía digital|guia digital)\b/i.test(text) ? "plantilla" : "unknown" };
     });
     const positivePrice = /[1-9]/.test(detail.price.replace(/^(?:R\$|ARS\s*|US\$|\$)\s*/i, ""));
-    return { status: detail.headline && positivePrice && detail.purchaseAction && detail.productType === PRODUCT_TYPE ? "sales_page" : "unverified",
-      finalUrl: page.url(), ...detail };
+    const niche = nicheFromPage(detail.nicheText);
+    const { nicheText, ...publicDetail } = detail;
+    return { status: detail.headline && positivePrice && detail.purchaseAction &&
+      (PRODUCT_TYPE === "any" ? detail.productType !== "unknown" : detail.productType === PRODUCT_TYPE) ? "sales_page" : "unverified",
+      finalUrl: page.url(), niche, ...publicDetail };
   } catch (error) { return { status: "inaccessible", error: String(error).slice(0, 240) }; }
   finally { await page.close(); }
 }
@@ -95,7 +121,7 @@ async function main() {
   const report = { observedAt: new Date().toISOString(), market: MARKET, niche: NICHE, query: QUERY,
     productType: PRODUCT_TYPE, searchUrl: libraryUrl(), status: "incomplete", scannedIds: 0, destinationIds: 0,
     reachedBottom: false, reviewedSummaries: 0, reviewedAdvertisers: 0, searchDestinationIds: 0,
-    advertiserScans: [], scope: "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes", groups: [], qualifying: [], error: null };
+    advertiserScans: [], scope: "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes", groups: [], qualifying: [], candidates: [], error: null };
   try {
     const page = await browser.newPage({ locale: "es-ES", viewport: { width: 1365, height: 900 } });
     await page.goto(report.searchUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
@@ -149,12 +175,24 @@ async function main() {
     const pageCounts = new Map();
     for (const ad of observations.values()) pageCounts.set(ad.pageId, (pageCounts.get(ad.pageId) || 0) + 1);
     const candidatePages = [...pageCounts].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([pageId]) => pageId);
+    const libraryPageIds = new Map();
     report.reachedBottom &&= candidatePages.length > 0;
     for (const pageId of candidatePages) {
-      const library = advertiserLibraryUrl(pageId);
+      // The numeric Facebook profile URL is often not the Ads Library page ID.
+      // Resolve the advertiser through Meta's own page-search suggestion.
+      const advertiser = [...observations.values()].find(ad => ad.pageId === pageId)?.advertiser;
+      let library = "", libraryPageId = null;
       let reachedBottom = false, error = null, unchanged = 0;
       try {
-        await page.goto(library, { waitUntil: "domcontentloaded", timeout: 45000 });
+        if (!advertiser) throw new Error("Advertiser name missing");
+        await page.goto(report.searchUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
+        const search = page.getByRole("searchbox", { name: /Buscar por palabra clave o anunciante|Search by keyword or advertiser/i });
+        await search.fill(advertiser);
+        await page.getByRole("heading", { name: advertiser, exact: true }).first().click({ timeout: 15000 });
+        libraryPageId = new URL(page.url()).searchParams.get("view_all_page_id");
+        if (!libraryPageId) throw new Error("No advertiser library ID from Meta suggestion");
+        library = advertiserLibraryUrl(libraryPageId);
+        libraryPageIds.set(pageId, libraryPageId);
         await page.getByText(/Identificador de la biblioteca|Library ID|ID da Biblioteca/i).first().waitFor({ timeout: 12000 });
         for (let i = 0; i < 45; i++) {
           const batch = await page.locator("body").evaluate(extractVisibleAds, { market: MARKET, niche: NICHE });
@@ -183,7 +221,7 @@ async function main() {
         error = `${String(cause).slice(0, 130)}; url=${page.url()}; page-tail=${diagnostic.replace(/\s+/g, " ")}`.slice(0, 1700);
       }
       report.reviewedAdvertisers++;
-      report.advertiserScans.push({ pageId, library, reachedBottom, error });
+      report.advertiserScans.push({ pageId, advertiser, libraryPageId, library, reachedBottom, error });
       report.reachedBottom &&= reachedBottom && !error;
     }
     // Search and creative-summary ads only nominate an advertiser. The actual
@@ -195,8 +233,18 @@ async function main() {
     report.groups = groupExactDestinations(ads);
     for (const group of report.groups.filter(g => g.count >= 21).slice(0, 4)) {
       const landing = await checkSalesPage(browser, group);
-      if (landing.status === "sales_page") report.qualifying.push({ ...group, landing });
+      if (landing.status === "sales_page") report.qualifying.push({ ...group, libraryPageId: libraryPageIds.get(group.pageId), niche: landing.niche, landing });
       else group.rejection = landing;
+    }
+    // Candidate evidence remains separate: search-result IDs do not satisfy
+    // the advertiser-library threshold, even when the sales page opens.
+    const searchGroups = groupExactDestinations([...observations.values()]);
+    for (const group of searchGroups.filter(g => g.count >= 2).slice(0, 3)) {
+      const landing = await checkSalesPage(browser, group);
+      if (landing.status === "sales_page" && !report.qualifying.some(o => o.pageId === group.pageId && o.landingUrl === group.landingUrl))
+        report.candidates.push({ ...group, market: MARKET, niche: landing.niche, productType: landing.productType,
+          libraryPageId: libraryPageIds.get(group.pageId) || null,
+          status: "pending_advertiser_library", evidenceSource: "search_results", landing });
     }
     report.status = report.reachedBottom ? "completed_pilot" : "partial_pilot";
   } catch (error) { report.error = String(error).slice(0, 500); }

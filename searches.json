@@ -1,14 +1,10 @@
 [
-  {"market":"AR","niche":"salud","productType":"ebook","query":"ebook recetas saludables"},
-  {"market":"AR","niche":"salud","productType":"app","query":"app entrenamiento en casa"},
-  {"market":"AR","niche":"dinero","productType":"ebook","query":"ebook finanzas personales"},
-  {"market":"AR","niche":"dinero","productType":"app","query":"app presupuesto familiar"},
-  {"market":"AR","niche":"amor","productType":"ebook","query":"ebook relaciones de pareja"},
-  {"market":"AR","niche":"amor","productType":"app","query":"app de pareja"},
-  {"market":"BR","niche":"salud","productType":"ebook","query":"ebook emagrecimento"},
-  {"market":"BR","niche":"salud","productType":"app","query":"app pilates"},
-  {"market":"BR","niche":"dinero","productType":"ebook","query":"ebook renda extra"},
-  {"market":"BR","niche":"dinero","productType":"app","query":"app finanças pessoais"},
-  {"market":"BR","niche":"amor","productType":"ebook","query":"ebook relacionamento"},
-  {"market":"BR","niche":"amor","productType":"app","query":"app relacionamento"}
+  {"market":"BR","niche":"unknown","productType":"any","query":"inlead.digital"},
+  {"market":"AR","niche":"unknown","productType":"any","query":"impultienda"},
+  {"market":"AR","niche":"unknown","productType":"any","query":"systeme.io"},
+  {"market":"BR","niche":"unknown","productType":"any","query":"systeme.io"},
+  {"market":"AR","niche":"unknown","productType":"any","query":"lovable.app"},
+  {"market":"BR","niche":"unknown","productType":"any","query":"lovable.app"},
+  {"market":"AR","niche":"unknown","productType":"any","query":"inlead.digital"},
+  {"market":"BR","niche":"unknown","productType":"any","query":"impultienda"}
 ]

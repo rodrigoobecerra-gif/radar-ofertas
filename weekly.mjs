@@ -9,6 +9,7 @@ const checkedDate = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argent
   year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 const coverage = [];
 const verified = new Map();
+const pending = new Map();
 
 for (const [index, search] of searches.slice(0, limit).entries()) {
   const output = `out/search-${index + 1}.json`;
@@ -29,37 +30,53 @@ for (const [index, search] of searches.slice(0, limit).entries()) {
     const key = [search.market, offer.pageId, offer.landingUrl].join("\u001f");
     const current = verified.get(key);
     const ids = new Set([...(current?.adIds || []), ...offer.adIds]);
-    verified.set(key, { ...offer, market: search.market, niche: search.niche,
-      productType: search.productType, search: search.query, adIds: [...ids], count: ids.size });
+    verified.set(key, { ...offer, market: search.market, niche: offer.niche,
+      productType: offer.landing.productType, search: search.query, adIds: [...ids], count: ids.size });
+  }
+  for (const candidate of report.candidates || []) {
+    const key = [search.market, candidate.pageId, candidate.landingUrl].join("\u001f");
+    const current = pending.get(key);
+    const adIds = [...new Set([...(current?.adIds || []), ...candidate.adIds])];
+    pending.set(key, { ...candidate, search: search.query, adIds, count: adIds.length });
   }
   console.log(`${index + 1}/${Math.min(limit, searches.length)} ${search.market} ${search.niche} ${search.productType}: ${report.status}, ${report.scannedIds} IDs, ${(report.qualifying || []).length} ofertas`);
 }
 
 const offers = [...verified.values()].filter(o => o.count >= 21).sort((a, b) => b.count - a.count).slice(0, 20);
+const candidates = [...pending.entries()].filter(([key]) => !verified.has(key)).map(([,value]) => value)
+  .sort((a, b) => b.count - a.count).slice(0, 12);
 const completeSearches = coverage.filter(c => c.status === "completed_pilot").length;
 const scannedSearches = coverage.filter(c => c.status === "completed_pilot" || c.status === "partial_pilot").length;
 const report = { checkedAt, checkedDate, status: completeSearches === coverage.length ? "completed_bounded_scan" : "partial_bounded_scan",
-  coverage, offers, count: offers.length, totalSearches: searches.length, executedSearches: coverage.length };
+  coverage, offers, candidates, count: offers.length, totalSearches: searches.length, executedSearches: coverage.length };
 await mkdir("reports", { recursive: true });
 await writeFile("reports/latest.json", JSON.stringify(report, null, 2) + "\n");
-const lines = ["# Radar semanal de ebooks y apps", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
+const lines = ["# Radar semanal · Cazador de Ofertas", "", `Revisión: ${checkedDate} (Argentina). Estado: ${report.status}.`,
   `Ofertas verificadas: **${offers.length} de un máximo de 20**. Búsquedas revisadas: ${coverage.length}/${searches.length}.`,
-  "", "El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Un cero no prueba que no existan otras ofertas en Meta.",
+  "", "Búsqueda por huellas de plataformas de venta; el nicho y el formato digital se clasifican al abrir la página. El muestreo revisa el primer bloque de resultados, hasta tres resúmenes y tres bibliotecas de anunciantes por búsqueda. Meta puede no indexar un dominio en la búsqueda. Un cero no prueba que no existan otras ofertas.",
   "Se cuentan IDs individuales activos del mismo anunciante y destino exacto: más de 20 para marcar actividad publicitaria sostenida. No implica ventas ni rentabilidad.",
   "Visitas a la página: no disponibles públicamente para esta URL; no se sustituyen por tráfico estimado del dominio. Se evalúan estructura, promesa, precio, CTA y pruebas visibles.", "", "## Ofertas", ""];
 if (!offers.length) lines.push("Ninguna cumplió el umbral y la verificación de página en la cobertura revisada.", "");
 for (const [index, o] of offers.entries()) {
   const library = new URL("https://www.facebook.com/ads/library/");
-  library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: o.market, view_all_page_id: o.pageId }).toString();
+  library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: o.market, view_all_page_id: o.libraryPageId }).toString();
   lines.push(`### ${index + 1}. ${o.advertiser} — ${o.market} · ${o.niche} · ${o.productType}`,
     `- **${o.count} IDs observados** con el mismo destino. Visitas de esta página: no verificables públicamente.`,
     `- Página: [${o.landing.headline || o.landingUrl}](${o.landingUrl}); precio visible: ${o.landing.price}; acción: ${o.landing.purchaseAction}.`,
+    o.landing.checkoutUrl ? `- [Checkout observado](${o.landing.checkoutUrl}); no se asume un order bump si no se observó.` : "- Checkout: no observable en el enlace de compra.",
     `- [Anunciante en Meta](${library}) · [Anuncio de muestra](https://www.facebook.com/ads/library/?id=${o.adIds[0]})`, "");
 }
-lines.push("## Cobertura", "", "| Mercado | Nicho | Formato | Búsqueda | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---|---|---:|---:|---:|---|");
-for (const c of coverage) lines.push(`| ${c.market} | ${c.niche} | ${c.productType} | ${c.query} | ${c.scannedIds || 0} | ${c.searchDestinationIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
+lines.push("## Candidatas en revisión", "", "Estas páginas de venta se abrieron desde anuncios activos con la huella buscada. Los IDs se observaron en resultados de búsqueda, no en la biblioteca completa del anunciante; **no son ofertas verificadas ni prueban ventas**.", "");
+if (!candidates.length) lines.push("Ninguna página de venta candidata comprobada en esta cobertura.", "");
+for (const c of candidates) {
+  const library = new URL("https://www.facebook.com/ads/library/");
+  if (c.libraryPageId) library.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: c.market, view_all_page_id: c.libraryPageId }).toString();
+  lines.push(`- **${c.advertiser} · ${c.market} · ${c.niche}**: ${c.count} IDs visibles en la búsqueda; [página de venta](${c.landingUrl}) (${c.landing.price}), ${c.libraryPageId ? `[biblioteca del anunciante](${library})` : "biblioteca aún sin resolver"}, [anuncio de muestra](https://www.facebook.com/ads/library/?id=${c.adIds[0]}). Pendiente de verificar el total de la misma página. `);
+}
+lines.push("## Cobertura", "", "| Mercado | Huella buscada | IDs vistos | Destinos en búsqueda | Destinos en biblioteca | Estado |", "|---|---|---:|---:|---:|---|");
+for (const c of coverage) lines.push(`| ${c.market} | ${c.query} | ${c.scannedIds || 0} | ${c.searchDestinationIds || 0} | ${c.destinationIds || 0} | ${c.status} |`);
 lines.push("", "Bibliotecas revisadas por búsqueda:", "");
-for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`- ${c.market} · ${c.query}: [anunciante ${a.pageId}](${a.library}) — ${a.error ? "error parcial" : a.reachedBottom ? "recorrido completo" : "recorrido parcial"}.`);
+for (const c of coverage) for (const a of c.advertiserScans || []) lines.push(`- ${c.market} · ${c.query}: ${a.library ? `[anunciante ${a.advertiser}](${a.library})` : `anunciante ${a.advertiser || a.pageId} (biblioteca sin resolver)`} — ${a.error ? "error parcial" : a.reachedBottom ? "recorrido completo" : "recorrido parcial"}.`);
 lines.push("", "Los resultados están fechados; este informe semanal no actualiza automáticamente el Site privado.", "");
 await writeFile("reports/latest.md", lines.join("\n"));
 console.log(JSON.stringify({ status: report.status, count: report.count, completeSearches, executedSearches: coverage.length }));
