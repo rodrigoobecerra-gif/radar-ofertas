@@ -69,7 +69,7 @@ function groupExactDestinations(ads) {
 
 function nicheFromPage(text) {
   const signals = {
-    salud: /\b(?:emagrec\w*|adelgaz\w*|pilates|trein\w*|entren\w*|recet\w*|receit\w*|menopaus\w*|saúde|salud|dieta|nutri\w*|aliment\w*|dormir|sono|yoga)\b/gi,
+    salud: /\b(?:emagrec\w*|adelgaz\w*|pilates|trein\w*|entren\w*|recet\w*|receit\w*|menopaus\w*|saúde|salud|dieta|nutri\w*|aliment\w*|dormir|sono|yoga|fisioterap\w*|ejercic\w*|exercíc\w*|movilidad|mobilidade|pacient\w*|rehabilit\w*)\b/gi,
     dinero: /\b(?:renda|ingresos?|dinheiro|dinero|finan\w*|deudas?|dívidas?|invest\w*|empreend\w*|emprend\w*|negocio|negócio|ahorro|economiz\w*)\b/gi,
     amor: /\b(?:pareja|casal|relaciona\w*|reconquist\w*|namorad\w*|ruptura|término|termino|apego|amor|separación|separação)\b/gi,
     hogar: /\b(?:hogar|casa|lar|limpieza|limpeza|organiza\w*|rotina|rutina|tareas|tarefas|família|familia)\b/gi,
@@ -90,10 +90,14 @@ async function checkSalesPage(browser, group) {
     const detail = await page.evaluate(() => {
       const text = document.body?.innerText || "";
       const actions = [...document.querySelectorAll("a,button")].map(e => ({ text: e.innerText.trim(), href: e instanceof HTMLAnchorElement ? e.href : "" })).filter(e => e.text);
-      const purchase = actions.find(a => /\b(?:comprar?|adquirir|assinar|inscrev(?:er|a)|garantir|finalizar pedido|ir para (?:o )?checkout)\b/i.test(a.text));
+      const purchase = actions.find(a => /\b(?:comprar?|adquirir|assinar|inscrev(?:er|a)|garantir|finalizar pedido|ir para (?:o )?checkout|quiero|quero|obtener|acceder|acessar|llevar|baixar|descargar)\b/i.test(a.text));
+      const currency = /(?:AR\$|R\$|ARS\s*|US\$|\$)\s*[\d.,]+/i;
+      const currentPrice = [...document.querySelectorAll('[itemprop="price"],.now,.price-current,.current-price,.sale-price,.preco-atual,.valor-atual')]
+        .map(e => e.textContent?.match(currency)?.[0]).find(Boolean);
+      const labeledPrice = text.match(/(?:hoy\s+(?:por|lo llev[aá]s por)|hoje\s+por|precio\s+(?:final|de oferta)|preço\s+(?:final|de oferta))[^\n]{0,90}?((?:AR\$|R\$|ARS\s*|US\$|\$)\s*[\d.,]+)/i)?.[1];
       return { headline: document.querySelector("h1")?.innerText.trim().slice(0, 220) || "",
         nicheText: [document.title, document.querySelector("h1")?.innerText || "", text.slice(0, 8000)].join(" "),
-        price: text.match(/(?:R\$|ARS\s*|US\$|\$)\s*[\d.,]+/i)?.[0] || "",
+        price: currentPrice || labeledPrice || "",
         purchaseAction: purchase?.text.slice(0, 120) || "",
         checkoutUrl: purchase?.href.startsWith("https://") ? purchase.href : "",
         productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital|biblioteca digital|pdf|tomos?|manual(?:es)?|guías?|guias?)\b/i.test(text) ? "ebook" :
