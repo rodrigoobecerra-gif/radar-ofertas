@@ -96,7 +96,7 @@ async function checkSalesPage(browser, group) {
         price: text.match(/(?:R\$|ARS\s*|US\$|\$)\s*[\d.,]+/i)?.[0] || "",
         purchaseAction: purchase?.text.slice(0, 120) || "",
         checkoutUrl: purchase?.href.startsWith("https://") ? purchase.href : "",
-        productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital)\b/i.test(text) ? "ebook" :
+        productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital|biblioteca digital|pdf|tomos?|manual(?:es)?|guías?|guias?)\b/i.test(text) ? "ebook" :
           /\b(?:app|aplicativo|aplicación|software|plataforma digital)\b/i.test(text) ? "app" :
           /\b(?:plantilla|template|planificador|planner|planificateur|guía digital|guia digital)\b/i.test(text) ? "plantilla" : "unknown" };
     });
@@ -117,7 +117,7 @@ async function main() {
   const report = { observedAt: new Date().toISOString(), market: MARKET, niche: NICHE, query: QUERY,
     productType: PRODUCT_TYPE, searchUrl: libraryUrl(), status: "incomplete", scannedIds: 0, destinationIds: 0,
     reachedBottom: false, reviewedSummaries: 0, reviewedAdvertisers: 0, searchDestinationIds: 0,
-    advertiserScans: [], scope: "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes", groups: [], qualifying: [], error: null };
+    advertiserScans: [], scope: "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes", groups: [], qualifying: [], candidates: [], error: null };
   try {
     const page = await browser.newPage({ locale: "es-ES", viewport: { width: 1365, height: 900 } });
     await page.goto(report.searchUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
@@ -219,6 +219,15 @@ async function main() {
       const landing = await checkSalesPage(browser, group);
       if (landing.status === "sales_page") report.qualifying.push({ ...group, niche: landing.niche, landing });
       else group.rejection = landing;
+    }
+    // Candidate evidence remains separate: search-result IDs do not satisfy
+    // the advertiser-library threshold, even when the sales page opens.
+    const searchGroups = groupExactDestinations([...observations.values()]);
+    for (const group of searchGroups.filter(g => g.count >= 2).slice(0, 3)) {
+      const landing = await checkSalesPage(browser, group);
+      if (landing.status === "sales_page" && !report.qualifying.some(o => o.pageId === group.pageId && o.landingUrl === group.landingUrl))
+        report.candidates.push({ ...group, market: MARKET, niche: landing.niche, productType: landing.productType,
+          status: "pending_advertiser_library", evidenceSource: "search_results", landing });
     }
     report.status = report.reachedBottom ? "completed_pilot" : "partial_pilot";
   } catch (error) { report.error = String(error).slice(0, 500); }
