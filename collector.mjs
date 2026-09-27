@@ -67,6 +67,17 @@ function groupExactDestinations(ads) {
     .sort((a, b) => b.count - a.count);
 }
 
+function nicheFromPage(text) {
+  const signals = {
+    salud: /\b(?:emagrec\w*|adelgaz\w*|pilates|trein\w*|entren\w*|recet\w*|receit\w*|menopaus\w*|saúde|salud|dieta|nutri\w*|aliment\w*|dormir|sono|yoga)\b/gi,
+    dinero: /\b(?:renda|ingresos?|dinheiro|dinero|finan\w*|deudas?|dívidas?|invest\w*|empreend\w*|emprend\w*|negocio|negócio|ahorro|economiz\w*)\b/gi,
+    amor: /\b(?:pareja|casal|relaciona\w*|reconquist\w*|namorad\w*|ruptura|término|termino|apego|amor|separación|separação)\b/gi
+  };
+  const scores = Object.entries(signals).map(([niche, pattern]) => [niche, [...text.matchAll(pattern)].length]);
+  scores.sort((a, b) => b[1] - a[1]);
+  return scores[0][1] >= 2 && scores[0][1] > scores[1][1] ? scores[0][0] : "unknown";
+}
+
 async function checkSalesPage(browser, group) {
   const page = await browser.newPage({ locale: MARKET === "BR" ? "pt-BR" : "es-AR" });
   try {
@@ -76,14 +87,18 @@ async function checkSalesPage(browser, group) {
       const text = document.body?.innerText || "";
       const actions = [...document.querySelectorAll("a,button")].map(e => e.innerText.trim()).filter(Boolean);
       return { headline: document.querySelector("h1")?.innerText.trim().slice(0, 220) || "",
+        nicheText: [document.title, document.querySelector("h1")?.innerText || "", text.slice(0, 8000)].join(" "),
         price: text.match(/(?:R\$|ARS\s*|US\$|\$)\s*[\d.,]+/i)?.[0] || "",
         purchaseAction: actions.find(a => /\b(?:comprar?|adquirir|assinar|inscrev(?:er|a)|garantir|finalizar pedido|ir para (?:o )?checkout)\b/i.test(a)) || "",
         productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital)\b/i.test(text) ? "ebook" :
           /\b(?:app|aplicativo|aplicación|software|plataforma digital)\b/i.test(text) ? "app" : "unknown" };
     });
     const positivePrice = /[1-9]/.test(detail.price.replace(/^(?:R\$|ARS\s*|US\$|\$)\s*/i, ""));
-    return { status: detail.headline && positivePrice && detail.purchaseAction && detail.productType === PRODUCT_TYPE ? "sales_page" : "unverified",
-      finalUrl: page.url(), ...detail };
+    const niche = nicheFromPage(detail.nicheText);
+    const { nicheText, ...publicDetail } = detail;
+    return { status: detail.headline && positivePrice && detail.purchaseAction && niche !== "unknown" &&
+      (PRODUCT_TYPE === "any" ? detail.productType !== "unknown" : detail.productType === PRODUCT_TYPE) ? "sales_page" : "unverified",
+      finalUrl: page.url(), niche, ...publicDetail };
   } catch (error) { return { status: "inaccessible", error: String(error).slice(0, 240) }; }
   finally { await page.close(); }
 }
@@ -195,7 +210,7 @@ async function main() {
     report.groups = groupExactDestinations(ads);
     for (const group of report.groups.filter(g => g.count >= 21).slice(0, 4)) {
       const landing = await checkSalesPage(browser, group);
-      if (landing.status === "sales_page") report.qualifying.push({ ...group, landing });
+      if (landing.status === "sales_page") report.qualifying.push({ ...group, niche: landing.niche, landing });
       else group.rejection = landing;
     }
     report.status = report.reachedBottom ? "completed_pilot" : "partial_pilot";
