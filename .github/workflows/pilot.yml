@@ -22,7 +22,7 @@ jobs:
         env:
           RADAR_SEARCH_LIMIT: ${{ github.event_name == 'pull_request' && '2' || '8' }}
       - name: Guardar informe privado
-        if: github.event_name == 'schedule'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
