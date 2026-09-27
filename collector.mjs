@@ -2,7 +2,7 @@ import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
-const QUERY = process.env.RADAR_QUERY || "pilates na parede";
+const QUERY = process.env.RADAR_QUERY || "ebook emagrecimento";
 const MARKET = process.env.RADAR_MARKET || "BR";
 const NICHE = process.env.RADAR_NICHE || "salud";
 const OUTPUT = process.env.RADAR_OUTPUT || "out/pilot.json";
@@ -82,7 +82,7 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
   const observations = new Map();
   const report = { observedAt: new Date().toISOString(), market: MARKET, niche: NICHE, query: QUERY,
-    searchUrl: libraryUrl(), status: "incomplete", scannedIds: 0, destinationIds: 0,
+    productType: "ebook", searchUrl: libraryUrl(), status: "incomplete", scannedIds: 0, destinationIds: 0,
     reachedBottom: false, groups: [], qualifying: [], error: null };
   try {
     const page = await browser.newPage({ locale: "es-ES", viewport: { width: 1365, height: 900 } });
