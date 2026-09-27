@@ -1,0 +1,25 @@
+name: Piloto Meta Ads Library
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright@1.63.0
+      - run: npx playwright install --with-deps chromium
+      - run: node collector.mjs
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: radar-pilot
+          path: out/pilot.json
+          retention-days: 7
