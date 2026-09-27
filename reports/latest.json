@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-09-27T04:51:56.626Z",
+  "checkedDate": "2026-09-27",
+  "status": "completed_bounded_scan",
+  "coverage": [
+    {
+      "market": "AR",
+      "niche": "salud",
+      "productType": "ebook",
+      "query": "ebook recetas saludables",
+      "status": "completed_pilot",
+      "scannedIds": 45,
+      "destinationIds": 23,
+      "reviewedSummaries": 3,
+      "scope": "primer bloque visible y hasta tres resúmenes",
+      "error": null
+    },
+    {
+      "market": "AR",
+      "niche": "salud",
+      "productType": "app",
+      "query": "app entrenamiento en casa",
+      "status": "completed_pilot",
+      "scannedIds": 33,
+      "destinationIds": 16,
+      "reviewedSummaries": 3,
+      "scope": "primer bloque visible y hasta tres resúmenes",
+      "error": null
+    }
+  ],
+  "offers": [],
+  "count": 0,
+  "totalSearches": 12,
+  "executedSearches": 2
+}
