@@ -75,7 +75,8 @@ async function checkSalesPage(browser, group) {
         productType: /\b(?:ebook|e-book|livro digital|libro digital|recetario digital)\b/i.test(text) ? "ebook" :
           /\b(?:app|aplicativo|aplicación|software|plataforma digital)\b/i.test(text) ? "app" : "unknown" };
     });
-    return { status: detail.headline && detail.price && detail.purchaseAction && detail.productType === PRODUCT_TYPE ? "sales_page" : "unverified",
+    const positivePrice = /[1-9]/.test(detail.price.replace(/^(?:R\$|ARS\s*|US\$|\$)\s*/i, ""));
+    return { status: detail.headline && positivePrice && detail.purchaseAction && detail.productType === PRODUCT_TYPE ? "sales_page" : "unverified",
       finalUrl: page.url(), ...detail };
   } catch (error) { return { status: "inaccessible", error: String(error).slice(0, 240) }; }
   finally { await page.close(); }
