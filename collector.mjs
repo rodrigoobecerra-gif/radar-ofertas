@@ -16,7 +16,7 @@ function libraryUrl() {
 
 function advertiserLibraryUrl(pageId) {
   const url = new URL("https://www.facebook.com/ads/library/");
-  url.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: MARKET, view_all_page_id: pageId }).toString();
+  url.search = new URLSearchParams({ active_status: "active", ad_type: "all", country: MARKET, media_type: "all", search_type: "page", view_all_page_id: pageId }).toString();
   return url.toString();
 }
 
