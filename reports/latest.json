@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-10-26T11:36:50.782Z",
-  "checkedDate": "2026-10-26",
+  "checkedAt": "2026-11-02T11:48:09.068Z",
+  "checkedDate": "2026-11-02",
   "status": "partial_bounded_scan",
   "coverage": [
     {
@@ -9,20 +9,12 @@
       "productType": "any",
       "query": "inlead.digital",
       "status": "partial_pilot",
-      "scannedIds": 46,
-      "searchDestinationIds": 12,
+      "scannedIds": 35,
+      "searchDestinationIds": 8,
       "destinationIds": 0,
       "reviewedSummaries": 3,
       "reviewedAdvertisers": 3,
       "advertiserScans": [
-        {
-          "pageId": "100093670137544",
-          "advertiser": "Afonso Ferreira Molina",
-          "libraryPageId": "100717913082040",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=100717913082040",
-          "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=100717913082040; page-tail=Se ha producido un error :("
-        },
         {
           "pageId": "100068773005523",
           "advertiser": "Pedro Lotz",
@@ -32,12 +24,20 @@
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=109287314050008; page-tail=Se ha producido un error :("
         },
         {
-          "pageId": "100091956393412",
-          "advertiser": "Acelera Concursos",
-          "libraryPageId": "110666561994416",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=110666561994416",
+          "pageId": "61562117230538",
+          "advertiser": "Nidi Conte",
+          "libraryPageId": "357554284112461",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=357554284112461",
           "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=110666561994416; page-tail=Se ha producido un error :("
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=357554284112461; page-tail=Se ha producido un error :("
+        },
+        {
+          "pageId": "61571436922998",
+          "advertiser": "Pincei Viagens",
+          "libraryPageId": "515664544963650",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=515664544963650",
+          "reachedBottom": false,
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=515664544963650; page-tail=Se ha producido un error :("
         }
       ],
       "scope": "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes",
@@ -49,8 +49,8 @@
       "productType": "any",
       "query": "impultienda",
       "status": "partial_pilot",
-      "scannedIds": 70,
-      "searchDestinationIds": 64,
+      "scannedIds": 66,
+      "searchDestinationIds": 61,
       "destinationIds": 0,
       "reviewedSummaries": 3,
       "reviewedAdvertisers": 3,
@@ -64,20 +64,20 @@
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1308405115692082; page-tail=Se ha producido un error :("
         },
         {
-          "pageId": "61593522823892",
-          "advertiser": "Geriactiva",
-          "libraryPageId": "1259324537268785",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1259324537268785",
-          "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1259324537268785; page-tail=Se ha producido un error :("
-        },
-        {
           "pageId": "61579797894834",
           "advertiser": "Alivio En Cada Plato",
           "libraryPageId": "757330437463874",
           "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=757330437463874",
           "reachedBottom": false,
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=757330437463874; page-tail=Se ha producido un error :("
+        },
+        {
+          "pageId": "61593522823892",
+          "advertiser": "Geriactiva",
+          "libraryPageId": "1259324537268785",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1259324537268785",
+          "reachedBottom": false,
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1259324537268785; page-tail=Se ha producido un error :("
         }
       ],
       "scope": "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes",
@@ -89,19 +89,19 @@
       "productType": "any",
       "query": "systeme.io",
       "status": "partial_pilot",
-      "scannedIds": 34,
-      "searchDestinationIds": 30,
+      "scannedIds": 33,
+      "searchDestinationIds": 26,
       "destinationIds": 0,
       "reviewedSummaries": 3,
       "reviewedAdvertisers": 3,
       "advertiserScans": [
         {
-          "pageId": "61594236643026",
-          "advertiser": "Blancosport",
-          "libraryPageId": "1305579232640648",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1305579232640648",
+          "pageId": "61595675607154",
+          "advertiser": "Epic Spins",
+          "libraryPageId": "100130225711756",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=100130225711756",
           "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1305579232640648; page-tail=Se ha producido un error :("
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=100130225711756; page-tail=Se ha producido un error :("
         },
         {
           "pageId": "61564272912909",
@@ -129,20 +129,12 @@
       "productType": "any",
       "query": "systeme.io",
       "status": "partial_pilot",
-      "scannedIds": 24,
-      "searchDestinationIds": 18,
+      "scannedIds": 26,
+      "searchDestinationIds": 14,
       "destinationIds": 0,
-      "reviewedSummaries": 0,
+      "reviewedSummaries": 1,
       "reviewedAdvertisers": 3,
       "advertiserScans": [
-        {
-          "pageId": "61551752747269",
-          "advertiser": "Laurenq Roset 192778759 607163411",
-          "libraryPageId": "133267403206811",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=133267403206811",
-          "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=133267403206811; page-tail=Se ha producido un error :("
-        },
         {
           "pageId": "100080714194961",
           "advertiser": "denize.beauty",
@@ -150,6 +142,14 @@
           "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=106165538721788",
           "reachedBottom": false,
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=106165538721788; page-tail=Se ha producido un error :("
+        },
+        {
+          "pageId": "61594435426008",
+          "advertiser": "Gold Hunt",
+          "libraryPageId": "1396964736826092",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=1396964736826092",
+          "reachedBottom": false,
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1396964736826092; page-tail=Se ha producido un error :("
         },
         {
           "pageId": "100070565221598",
@@ -169,8 +169,8 @@
       "productType": "any",
       "query": "lovable.app",
       "status": "partial_pilot",
-      "scannedIds": 27,
-      "searchDestinationIds": 25,
+      "scannedIds": 28,
+      "searchDestinationIds": 21,
       "destinationIds": 0,
       "reviewedSummaries": 2,
       "reviewedAdvertisers": 3,
@@ -209,8 +209,8 @@
       "productType": "any",
       "query": "lovable.app",
       "status": "partial_pilot",
-      "scannedIds": 27,
-      "searchDestinationIds": 18,
+      "scannedIds": 26,
+      "searchDestinationIds": 16,
       "destinationIds": 0,
       "reviewedSummaries": 3,
       "reviewedAdvertisers": 3,
@@ -224,20 +224,20 @@
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=544022015466938; page-tail=Se ha producido un error :("
         },
         {
-          "pageId": "61590285714150",
-          "advertiser": "Luana Oliveira",
-          "libraryPageId": "1108439012356829",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=1108439012356829",
-          "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1108439012356829; page-tail=Se ha producido un error :("
-        },
-        {
           "pageId": "61589304935447",
           "advertiser": "Hercules App",
           "libraryPageId": "1147499928437320",
           "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=1147499928437320",
           "reachedBottom": false,
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1147499928437320; page-tail=Se ha producido un error :("
+        },
+        {
+          "pageId": "61590285714150",
+          "advertiser": "Luana Oliveira",
+          "libraryPageId": "1108439012356829",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&media_type=all&search_type=page&view_all_page_id=1108439012356829",
+          "reachedBottom": false,
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1108439012356829; page-tail=Se ha producido un error :("
         }
       ],
       "scope": "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes",
@@ -249,20 +249,12 @@
       "productType": "any",
       "query": "inlead.digital",
       "status": "partial_pilot",
-      "scannedIds": 30,
-      "searchDestinationIds": 21,
+      "scannedIds": 32,
+      "searchDestinationIds": 19,
       "destinationIds": 0,
-      "reviewedSummaries": 2,
-      "reviewedAdvertisers": 3,
+      "reviewedSummaries": 3,
+      "reviewedAdvertisers": 2,
       "advertiserScans": [
-        {
-          "pageId": "61593335495437",
-          "advertiser": "Gabriela Marianovich - Especialista en Lipedema",
-          "libraryPageId": "1291108444087718",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=1291108444087718",
-          "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1291108444087718; page-tail=Se ha producido un error :("
-        },
         {
           "pageId": "61588878585779",
           "advertiser": "Lety Fitness",
@@ -272,12 +264,12 @@
           "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=1052166271320586; page-tail=Se ha producido un error :("
         },
         {
-          "pageId": "61574245506008",
-          "advertiser": "Florencia Lopez",
-          "libraryPageId": "621662804554294",
-          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=621662804554294",
+          "pageId": "61570186037935",
+          "advertiser": "Cursos Online",
+          "libraryPageId": "104535128375577",
+          "library": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&media_type=all&search_type=page&view_all_page_id=104535128375577",
           "reachedBottom": false,
-          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=621662804554294; page-tail=Se ha producido un error :("
+          "error": "TimeoutError: locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByText(/Identificador de la biblioteca|Libra; url=https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=AR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=104535128375577; page-tail=Se ha producido un error :("
         }
       ],
       "scope": "primer bloque visible, hasta tres resúmenes y tres bibliotecas de anunciantes",
@@ -289,8 +281,8 @@
       "productType": "any",
       "query": "impultienda",
       "status": "partial_pilot",
-      "scannedIds": 33,
-      "searchDestinationIds": 20,
+      "scannedIds": 31,
+      "searchDestinationIds": 19,
       "destinationIds": 0,
       "reviewedSummaries": 3,
       "reviewedAdvertisers": 3,
@@ -334,16 +326,15 @@
         "1125258513218711",
         "1605058248027292",
         "1095644926310921",
-        "1981411072797688",
         "1132825509218122",
+        "1981411072797688",
         "1261581522776045",
-        "1097850842662778",
         "1795175035065892",
         "29398560996413276",
         "1082227024709542",
-        "2909587482739650"
+        "1068062996199390"
       ],
-      "count": 11,
+      "count": 10,
       "market": "BR",
       "niche": "salud",
       "productType": "ebook",
@@ -370,15 +361,11 @@
         "1125258513218711",
         "1605058248027292",
         "1095644926310921",
-        "1981411072797688",
         "1132825509218122",
-        "1261581522776045",
-        "1835596857540117",
-        "1107064245180249",
-        "3012465015769717",
-        "3485625828279500"
+        "1981411072797688",
+        "1261581522776045"
       ],
-      "count": 10,
+      "count": 6,
       "market": "AR",
       "niche": "salud",
       "productType": "ebook",
